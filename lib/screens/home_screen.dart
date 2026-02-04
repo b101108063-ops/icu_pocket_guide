@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 // 引入所有我們做好的模組
 import 'ards_screen.dart';
+import 'sedation_screen.dart';
 import 'sepsis_screen.dart';
 import 'lung_screen.dart';
 import 'rosc_screen.dart';
@@ -162,6 +163,13 @@ class HomeScreen extends StatelessWidget {
                     Icons.psychology_alt,
                     Colors.deepPurple,
                     const MeningitisScreen(),
+                  ),
+                  _buildMiniCard(
+                    context,
+                    'Sedation / PAD', // 標題
+                    Icons.nights_stay, // 使用月亮圖示代表鎮靜/睡眠
+                    Colors.deepPurpleAccent, // 紫色系
+                    const SedationScreen(),
                   ),
                 ],
               ),

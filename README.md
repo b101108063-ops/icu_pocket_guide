@@ -14,3 +14,12 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+
+flutter build web --base-href "/icu_pocket_guide/" --release
+搬移：
+清空 docs。
+複製 build/web 全部內容到 docs。
+(檢查 .nojekyll 是否存在)。
+git add .
+git commit -m "Add Sedation PAD protocol"
+git push

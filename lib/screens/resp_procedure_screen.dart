@@ -12,18 +12,16 @@ class _RespProcedureScreenState extends State<RespProcedureScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
-  // Weaning Calculator State
+  // State 變數
   final TextEditingController _rrController = TextEditingController();
-  final TextEditingController _vtController = TextEditingController(); // ml
+  final TextEditingController _vtController = TextEditingController();
   double? _rsbi;
 
-  // Cuff Leak State
   final TextEditingController _vtiController = TextEditingController();
   final TextEditingController _vteController = TextEditingController();
   double? _leakVolume;
   double? _leakPercent;
 
-  // CVVH State
   final TextEditingController _weightController = TextEditingController();
   double _weight = 60.0;
 
@@ -33,9 +31,7 @@ class _RespProcedureScreenState extends State<RespProcedureScreen>
     _tabController = TabController(length: 3, vsync: this);
     _weightController.text = "60";
     _weightController.addListener(() {
-      setState(() {
-        _weight = double.tryParse(_weightController.text) ?? 60.0;
-      });
+      setState(() => _weight = double.tryParse(_weightController.text) ?? 60.0);
     });
   }
 
@@ -45,14 +41,11 @@ class _RespProcedureScreenState extends State<RespProcedureScreen>
     super.dispose();
   }
 
+  // 計算邏輯
   void _calculateRsbi() {
     double rr = double.tryParse(_rrController.text) ?? 0;
-    double vt = double.tryParse(_vtController.text) ?? 0; // ml
-    if (vt > 0) {
-      setState(() {
-        _rsbi = rr / (vt / 1000); // RSBI formula uses Liters
-      });
-    }
+    double vt = double.tryParse(_vtController.text) ?? 0;
+    if (vt > 0) setState(() => _rsbi = rr / (vt / 1000));
   }
 
   void _calculateLeak() {
@@ -70,26 +63,30 @@ class _RespProcedureScreenState extends State<RespProcedureScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Vent & Procedures"),
+        title: const Text("Vent & ICU Procedures"),
         backgroundColor: Colors.teal[800],
         bottom: TabBar(
           controller: _tabController,
           indicatorColor: Colors.tealAccent,
           tabs: const [
-            Tab(text: "Weaning"),
-            Tab(text: "Trouble"),
-            Tab(text: "Lines/CVVH"),
+            Tab(text: "Weaning"), // 脫離
+            Tab(text: "Trouble"), // 異常波形與處置
+            Tab(text: "Lines/CVVH"), // 管路與洗腎
           ],
         ),
       ),
       body: TabBarView(
         controller: _tabController,
-        children: [_buildWeaningTab(), _buildTroubleTab(), _buildLinesTab()],
+        children: [
+          _buildWeaningTab(),
+          _buildTroubleshootingTab(),
+          _buildLinesTab(),
+        ],
       ),
     );
   }
 
-  // --- Tab 1: Weaning Calculator ---
+  // --- Tab 1: Weaning (RSBI & Cuff Leak) ---
   Widget _buildWeaningTab() {
     return ListView(
       padding: const EdgeInsets.all(16),
@@ -98,7 +95,7 @@ class _RespProcedureScreenState extends State<RespProcedureScreen>
         Card(
           color: Colors.grey[900],
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(16),
             child: Column(
               children: [
                 Row(
@@ -145,21 +142,19 @@ class _RespProcedureScreenState extends State<RespProcedureScreen>
             ),
           ),
         ),
-
         const SizedBox(height: 16),
-        _buildSectionHeader("2. Cuff Leak Test (拔管前測試)"),
+        _buildSectionHeader("2. Cuff Leak Test (拔管前)"),
         Card(
           color: Colors.grey[900],
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(16),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [
                     Expanded(child: _buildInput(_vtiController, "Vti (吸氣)")),
                     const SizedBox(width: 10),
-                    Expanded(child: _buildInput(_vteController, "Vte (氣囊放掉後)")),
+                    Expanded(child: _buildInput(_vteController, "Vte (氣囊放掉)")),
                     IconButton(
                       icon: const Icon(
                         Icons.calculate,
@@ -172,25 +167,20 @@ class _RespProcedureScreenState extends State<RespProcedureScreen>
                 ),
                 if (_leakVolume != null) ...[
                   const Divider(),
-                  Text("Leak Volume: ${_leakVolume!.toStringAsFixed(0)} ml"),
                   Text(
-                    "Leak Percent: ${_leakPercent!.toStringAsFixed(1)} %",
+                    "Leak: ${_leakVolume!.toStringAsFixed(0)} ml (${_leakPercent!.toStringAsFixed(1)}%)",
                     style: TextStyle(
-                      fontSize: 20,
+                      fontSize: 18,
                       fontWeight: FontWeight.bold,
                       color: (_leakVolume! > 110 || _leakPercent! > 12)
                           ? Colors.greenAccent
                           : Colors.redAccent,
                     ),
                   ),
-                  const SizedBox(height: 8),
                   if (_leakVolume! <= 110)
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      color: Colors.red.withOpacity(0.2),
-                      child: const Text(
-                        "Fail! Rx: Solu-Medrol 20mg IV Q4H x 4 doses",
-                      ),
+                    const Text(
+                      "Fail! Rx: Solu-Medrol 20mg IV Q4H x 4 doses",
+                      style: TextStyle(color: Colors.redAccent),
                     ),
                 ],
               ],
@@ -201,8 +191,8 @@ class _RespProcedureScreenState extends State<RespProcedureScreen>
     );
   }
 
-  // --- Tab 2: Troubleshooting (Red Flags) ---
-  Widget _buildTroubleTab() {
+  // --- Tab 2: Troubleshooting (Merged Auto-PEEP & Waveforms) ---
+  Widget _buildTroubleshootingTab() {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
@@ -212,46 +202,52 @@ class _RespProcedureScreenState extends State<RespProcedureScreen>
           shape: RoundedRectangleBorder(
             side: const BorderSide(color: Colors.redAccent),
           ),
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
+          child: const Padding(
+            padding: EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  "徵象: Flow loop 吐氣回不了原點 / BP Drop",
-                  style: TextStyle(color: Colors.white70),
-                ),
-                const Divider(color: Colors.redAccent),
-                const Row(
+                Row(
                   children: [
                     Icon(Icons.warning, color: Colors.redAccent),
                     SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        "危急處置 (Desaturation/Hypotension)",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                          color: Colors.redAccent,
-                        ),
+                    Text(
+                      "危急處置 (Desaturation/Hypotension)",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                        color: Colors.redAccent,
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 8),
-                const Text(
-                  "1. Disconnect Ventilator (Air release)",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                Divider(color: Colors.redAccent),
+                Text(
+                  "1. Disconnect Ventilator (拔管路, Air release)",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
-                const Text("2. Ambu bagging & Suction"),
-                const Text("3. 調整: 降 Rate, 降 Ti, 給支擴劑"),
+                Text("2. Ambu bagging & Suction"),
+                Text("3. 設定調整: 降 Rate, 降 Ti, 給支擴劑"),
               ],
             ),
           ),
         ),
-
         const SizedBox(height: 16),
-        _buildSectionHeader("2. Pneumothorax (氣胸)"),
+        _buildSectionHeader("2. 波形異常判讀 (Waveforms)"),
+        const ListTile(
+          leading: Icon(Icons.waves, color: Colors.tealAccent),
+          title: Text("Scooping Sign (凹陷)"),
+          subtitle: Text("Flow-Volume curve 吐氣端凹陷。\n代表：呼吸道阻力增加 (Asthma/COPD)。"),
+        ),
+        const ListTile(
+          leading: Icon(Icons.loop, color: Colors.tealAccent),
+          title: Text("Auto-PEEP Loop"),
+          subtitle: Text(
+            "Flow-Volume loop 吐氣端「回不了原點」。\n處置：請 RT 測量 Intrinsic PEEP。",
+          ),
+        ),
+        const SizedBox(height: 16),
+        _buildSectionHeader("3. Pneumothorax (氣胸)"),
         const Card(
           color: Colors.black45,
           child: ListTile(
@@ -262,56 +258,25 @@ class _RespProcedureScreenState extends State<RespProcedureScreen>
             ),
           ),
         ),
-
-        const SizedBox(height: 16),
-        _buildSectionHeader("3. Echo 判讀口訣"),
-        const Card(
-          color: Colors.black45,
-          child: Column(
-            children: [
-              ListTile(
-                title: Text("A-line"),
-                subtitle: Text("正常 (氣體)"),
-                dense: true,
-              ),
-              ListTile(
-                title: Text("B-line (Comet tail)"),
-                subtitle: Text("肺水腫 (Lung Edema)"),
-                dense: true,
-              ),
-              ListTile(
-                title: Text("D-shape LV"),
-                subtitle: Text("Pulmonary Embolism (PE)"),
-                dense: true,
-              ),
-            ],
-          ),
-        ),
       ],
     );
   }
 
-  // --- Tab 3: Procedures & Lines ---
+  // --- Tab 3: Lines & CVVH ---
   Widget _buildLinesTab() {
-    // CVVH 計算
     double cvvhReplacement = _weight * 35;
-
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        // 1. CVVH Calculator
-        _buildSectionHeader("1. CVVH / CVVHDF 劑量"),
+        _buildSectionHeader("1. CVVH 計算 (35ml/kg)"),
         Card(
           color: Colors.blueGrey[900],
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(16),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [
-                    const Icon(Icons.monitor_weight),
-                    const SizedBox(width: 8),
                     const Text("體重: "),
                     SizedBox(
                       width: 60,
@@ -325,30 +290,17 @@ class _RespProcedureScreenState extends State<RespProcedureScreen>
                   ],
                 ),
                 const Divider(),
-                const Text(
-                  "Suggested Orders:",
-                  style: TextStyle(color: Colors.cyanAccent),
-                ),
-                const SizedBox(height: 8),
                 _buildOrderRow(
-                  "CVVH Replacement (35ml/kg)",
+                  "Replacement",
                   "${cvvhReplacement.toInt()} ml/hr",
                 ),
-                _buildOrderRow(
-                  "Heparin Maintenance",
-                  "Run 5 ml/hr (1000u in 20ml)",
-                ),
-                const Text(
-                  "註: 若出血傾向勿用 Heparin",
-                  style: TextStyle(color: Colors.grey, fontSize: 12),
-                ),
+                _buildOrderRow("Heparin", "5 ml/hr (1000u/20ml)"),
               ],
             ),
           ),
         ),
-
         const SizedBox(height: 16),
-        _buildSectionHeader("2. Flotrac / A-line 判讀"),
+        _buildSectionHeader("2. Flotrac / A-line"),
         const Card(
           color: Colors.black45,
           child: Column(
@@ -356,17 +308,17 @@ class _RespProcedureScreenState extends State<RespProcedureScreen>
               ListTile(
                 title: Text("SVV > 10-12%"),
                 subtitle: Text(
-                  "Hypovolemia (欠水) -> 給水",
+                  "欠水 (Hypovolemia) -> Challenge fluid",
                   style: TextStyle(color: Colors.greenAccent),
                 ),
               ),
               ListTile(
-                title: Text("A-line Over-damping (波形鈍)"),
-                subtitle: Text("氣泡、折到 -> SBP 低估"),
+                title: Text("Over-damping (波形鈍)"),
+                subtitle: Text("氣泡、折到 -> SBP 被低估"),
               ),
               ListTile(
-                title: Text("A-line Under-damping (震盪大)"),
-                subtitle: Text("管路過長、心跳快 -> SBP 高估"),
+                title: Text("Under-damping (震盪大)"),
+                subtitle: Text("管路長、心跳快 -> SBP 被高估"),
               ),
             ],
           ),
@@ -375,25 +327,22 @@ class _RespProcedureScreenState extends State<RespProcedureScreen>
     );
   }
 
-  // --- Helpers ---
-
-  Widget _buildSectionHeader(String title) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 4, bottom: 8),
-      child: Text(
-        title,
-        style: const TextStyle(
-          color: Colors.tealAccent,
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-        ),
+  // Helpers
+  Widget _buildSectionHeader(String title) => Padding(
+    padding: const EdgeInsets.only(left: 4, bottom: 8),
+    child: Text(
+      title,
+      style: const TextStyle(
+        color: Colors.tealAccent,
+        fontSize: 16,
+        fontWeight: FontWeight.bold,
       ),
-    );
-  }
+    ),
+  );
 
-  Widget _buildInput(TextEditingController controller, String label) {
+  Widget _buildInput(TextEditingController c, String label) {
     return TextField(
-      controller: controller,
+      controller: c,
       keyboardType: TextInputType.number,
       decoration: InputDecoration(
         labelText: label,
