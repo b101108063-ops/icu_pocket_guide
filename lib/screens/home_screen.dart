@@ -14,6 +14,7 @@ import 'meningitis_screen.dart';
 import 'resp_procedure_screen.dart';
 import 'aline_screen.dart';
 import 'cvvh_screen.dart';
+import 'icu_meds_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -107,6 +108,14 @@ class HomeScreen extends StatelessWidget {
                     Icons.show_chart,
                     Colors.deepOrangeAccent,
                     const AlineScreen(),
+                  ),
+
+                  _buildMiniCard(
+                    context,
+                    'ER/ICU Meds',
+                    Icons.medication_liquid, // 推薦使用點滴或藥物圖示
+                    Colors.redAccent, // 使用紅色突顯急救性質
+                    const ErMedsScreen(),
                   ),
 
                   // --- Renal / GI ---
