@@ -1,4 +1,3 @@
-// lib/screens/ards_screen.dart
 import 'package:flutter/material.dart';
 import '../utils/resp_calcs.dart';
 
@@ -10,6 +9,7 @@ class ArdsScreen extends StatefulWidget {
 }
 
 class _ArdsScreenState extends State<ArdsScreen> {
+  // ... (保留原本的變數: _heightController, _isMale, _ibw, _targetVT) ...
   final TextEditingController _heightController = TextEditingController();
   bool _isMale = true;
   double? _ibw;
@@ -27,12 +27,10 @@ class _ArdsScreenState extends State<ArdsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("ARDS Protocol"),
-        backgroundColor: Colors.blueGrey[800],
-      ),
-      body: ListView(
+    // ★ 修改點：移除 Scaffold/AppBar，直接回傳 Container
+    return Container(
+      color: Colors.grey[900], // 確保背景是黑的
+      child: ListView(
         padding: const EdgeInsets.all(16),
         children: [
           _buildCalculatorCard(),
@@ -51,13 +49,10 @@ class _ArdsScreenState extends State<ArdsScreen> {
     );
   }
 
-  // ... (保留原有的 Widget 方法，如 _buildCalculatorCard, _buildCriteriaCard 等，內容不變)
-  // 為了節省篇幅，這裡省略重複的 UI 代碼，請直接使用您原本 ards_screen.dart 的內容
-  // 重點是：不需要變動邏輯
-
-  // (請將原本 ards_screen.dart 剩下的 Widget 程式碼貼在這裡)
+  // ... (保留下方所有 Widget: _buildCalculatorCard, _buildCriteriaCard 等等，完全不用動) ...
+  // 請將原本檔案下方的程式碼直接保留即可
   Widget _buildCalculatorCard() {
-    // ... 您的原始代碼
+    // ... (您的原始代碼) ...
     return Card(
       color: Colors.blueGrey[900],
       child: Padding(

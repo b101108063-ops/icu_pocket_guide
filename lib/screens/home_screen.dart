@@ -1,49 +1,16 @@
 // lib/screens/home_screen.dart
 import 'package:flutter/material.dart';
 
-// 引入所有我們做好的模組
-import 'ards_screen.dart';
-import 'sedation_screen.dart';
-import 'sepsis_screen.dart';
-import 'lung_screen.dart';
-import 'rosc_screen.dart';
-import 'gib_screen.dart';
-import 'cvs_screen.dart';
-import 'neuro_screen.dart';
-import 'seizure_screen.dart';
-import 'meningitis_screen.dart';
-import 'resp_procedure_screen.dart';
-import 'aline_screen.dart';
-import 'cvvh_screen.dart';
-import 'icu_meds_screen.dart';
+// 引入各系統的 Menu 頁面
+import 'menus/resp_menu_screen.dart';
+import 'menus/cvs_menu_screen.dart';
+import 'menus/neuro_menu_screen.dart';
+// 其他系統暫時用 Placeholder
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
-  // 目前顯示在首頁的版本號
-  final String _currentVersion = "v1.3.0";
-
-  // 詳細的更新日誌 (最新的放最上面)
-  final List<Map<String, String>> _versionHistory = const [
-    {
-      "version": "v1.3.0 (2026.02.04)",
-      "content":
-          "• 新增 A-line 操作與波形判讀\n• 新增 Flotrac 休克鑑別矩陣\n• 新增 CVVH 洗腎劑量計算機\n• 升級 CVS 模組 (IABP, ECMO 詳細圖解)",
-    },
-    {
-      "version": "v1.2.0 (2026.02.01)",
-      "content":
-          "• 新增 Neuro 模組 (Stroke, Seizure, Meningitis)\n• 新增 呼吸器脫離指標 (RSBI) 計算機\n• 新增 拔管前測試 (Cuff Leak) 計算機",
-    },
-    {
-      "version": "v1.1.0 (2026.01.28)",
-      "content": "• 新增 Sepsis 敗血症指引\n• 新增 GI Bleeding 處置流程\n• 介面優化：首頁改為九宮格佈局",
-    },
-    {
-      "version": "v1.0.0 (2026.01.20)",
-      "content": "• App 初始發布\n• 包含基礎 ARDS, CVS, ACLS 功能",
-    },
-  ];
+  final String _appVersion = "v2.0.0 (System-Based)";
 
   @override
   Widget build(BuildContext context) {
@@ -55,236 +22,98 @@ class HomeScreen extends StatelessWidget {
       ),
       body: Column(
         children: [
-          // 上半部：功能九宮格
           Expanded(
             child: Padding(
               padding: const EdgeInsets.all(12.0),
               child: GridView.count(
-                crossAxisCount: 3,
-                crossAxisSpacing: 10,
-                mainAxisSpacing: 10,
-                childAspectRatio: 0.85,
+                crossAxisCount: 2, // 改成兩欄，讓按鈕大一點，方便點擊
+                crossAxisSpacing: 12,
+                mainAxisSpacing: 12,
+                childAspectRatio: 1.1,
                 children: [
-                  // --- Respiratory System ---
-                  _buildMiniCard(
+                  // 1. Cardiovascular (紅)
+                  _buildSystemCard(
                     context,
-                    'ARDS / Vent',
+                    'Cardiovascular\n心血管系統',
+                    Icons.monitor_heart,
+                    Colors.redAccent,
+                    const CvsMenuScreen(),
+                  ),
+                  // 2. Respiratory (藍)
+                  _buildSystemCard(
+                    context,
+                    'Respiratory\n呼吸系統',
                     Icons.air,
                     Colors.blueAccent,
-                    const ArdsScreen(),
+                    const RespMenuScreen(),
                   ),
-                  _buildMiniCard(
+                  // 3. Neurological (紫)
+                  _buildSystemCard(
                     context,
-                    'Pna / COPD',
-                    Icons.masks,
-                    Colors.blueAccent,
-                    const LungScreen(),
+                    'Neurological\n神經系統',
+                    Icons.psychology,
+                    Colors.deepPurpleAccent,
+                    const NeuroMenuScreen(),
                   ),
-                  _buildMiniCard(
+                  // 4. GI & Hepatic (橘)
+                  _buildSystemCard(
                     context,
-                    'Vent / Lines',
-                    Icons.settings_input_composite,
-                    Colors.teal,
-                    const RespProcedureScreen(),
+                    'GI & Hepatic\n消化與肝膽',
+                    Icons.medication_liquid,
+                    Colors.orangeAccent,
+                    _buildPlaceholder("GI & Hepatic"),
                   ),
-
-                  // --- Cardiovascular System ---
-                  _buildMiniCard(
+                  // 5. Renal & GU (黃)
+                  _buildSystemCard(
                     context,
-                    'CVS / Shock',
-                    Icons.monitor_heart,
-                    Colors.cyanAccent,
-                    const CvsScreen(),
-                  ),
-                  _buildMiniCard(
-                    context,
-                    'Sepsis / Fluids',
+                    'Renal & GU\n腎臟與泌尿',
                     Icons.water_drop,
-                    Colors.cyan,
-                    const SepsisScreen(),
+                    Colors.yellow[700]!,
+                    _buildPlaceholder("Renal & GU"),
                   ),
-                  _buildMiniCard(
+                  // 6. Endo & Meta (綠)
+                  _buildSystemCard(
                     context,
-                    'A-line / Flotrac',
-                    Icons.show_chart,
-                    Colors.deepOrangeAccent,
-                    const AlineScreen(),
-                  ),
-
-                  _buildMiniCard(
-                    context,
-                    'ER/ICU Meds',
-                    Icons.medication_liquid, // 推薦使用點滴或藥物圖示
-                    Colors.redAccent, // 使用紅色突顯急救性質
-                    const ErMedsScreen(),
-                  ),
-
-                  // --- Renal / GI ---
-                  _buildMiniCard(
-                    context,
-                    'CRRT / oXiris',
-                    Icons.cleaning_services,
-                    Colors.blueGrey,
-                    const CvvhScreen(),
-                  ),
-                  _buildMiniCard(
-                    context,
-                    'GI Bleeding',
+                    'Endocrine\n內分泌與代謝',
                     Icons.bloodtype,
-                    Colors.red[700]!,
-                    const GibScreen(),
+                    Colors.green,
+                    _buildPlaceholder("Endocrine & Metabolic"),
                   ),
-                  _buildMiniCard(
+                  // 7. Hematology (深紅)
+                  _buildSystemCard(
                     context,
-                    'ROSC / TTM',
-                    Icons.ac_unit,
-                    Colors.lightBlue,
-                    const RoscScreen(),
+                    'Hematology\n血液系統',
+                    Icons.opacity,
+                    Colors.red[900]!,
+                    _buildPlaceholder("Hematology"),
                   ),
-
-                  // --- Neuro System ---
-                  _buildMiniCard(
+                  // 8. Toxicology (灰)
+                  _buildSystemCard(
                     context,
-                    'Stroke / ICH',
-                    Icons.flash_on,
-                    Colors.indigoAccent,
-                    const NeuroScreen(),
+                    'Toxicology\n毒物與環境',
+                    Icons.warning_amber,
+                    Colors.grey,
+                    _buildPlaceholder("Toxicology"),
                   ),
-                  _buildMiniCard(
+                  // 9. Infectious (青)
+                  _buildSystemCard(
                     context,
-                    'Seizure',
-                    Icons.electric_bolt,
-                    Colors.purpleAccent,
-                    const SeizureScreen(),
-                  ),
-                  _buildMiniCard(
-                    context,
-                    'Meningitis',
-                    Icons.psychology_alt,
-                    Colors.deepPurple,
-                    const MeningitisScreen(),
-                  ),
-                  _buildMiniCard(
-                    context,
-                    'Sedation / PAD', // 標題
-                    Icons.nights_stay, // 使用月亮圖示代表鎮靜/睡眠
-                    Colors.deepPurpleAccent, // 紫色系
-                    const SedationScreen(),
+                    'Infectious ID\n感染科',
+                    Icons.bug_report,
+                    Colors.teal,
+                    _buildPlaceholder("Infectious Disease"),
                   ),
                 ],
               ),
             ),
           ),
-
-          // 下半部：Footer (可點擊查看更新日誌)
-          GestureDetector(
-            onTap: () => _showChangelog(context), // 點擊觸發彈窗
-            child: Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              color: Colors.grey[850], // 稍微亮一點的灰色，暗示可點擊
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text(
-                    "Created by rockynow",
-                    style: TextStyle(
-                      color: Colors.white70,
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      fontStyle: FontStyle.italic,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "Version: $_currentVersion",
-                        style: const TextStyle(
-                          color: Colors.white30,
-                          fontSize: 12,
-                        ),
-                      ),
-                      const SizedBox(width: 4),
-                      const Icon(
-                        Icons.info_outline,
-                        color: Colors.white30,
-                        size: 14,
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
+          _buildFooter(),
         ],
       ),
     );
   }
 
-  // 顯示更新日誌的彈出視窗
-  void _showChangelog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          backgroundColor: Colors.grey[900],
-          title: const Text(
-            "Version History",
-            style: TextStyle(color: Colors.white),
-          ),
-          content: SizedBox(
-            width: double.maxFinite,
-            child: ListView.builder(
-              shrinkWrap: true,
-              itemCount: _versionHistory.length,
-              itemBuilder: (context, index) {
-                final item = _versionHistory[index];
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        item["version"]!,
-                        style: const TextStyle(
-                          color: Colors.cyanAccent,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        item["content"]!,
-                        style: const TextStyle(
-                          color: Colors.white70,
-                          height: 1.5,
-                        ),
-                      ),
-                      const Divider(color: Colors.grey),
-                    ],
-                  ),
-                );
-              },
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text(
-                "Close",
-                style: TextStyle(color: Colors.cyanAccent),
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  // 小卡片元件
-  Widget _buildMiniCard(
+  Widget _buildSystemCard(
     BuildContext context,
     String title,
     IconData icon,
@@ -293,36 +122,69 @@ class HomeScreen extends StatelessWidget {
   ) {
     return Card(
       color: Colors.grey[900],
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      elevation: 4,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(color: color.withOpacity(0.5), width: 2), // 加個邊框更有質感
+      ),
       child: InkWell(
-        borderRadius: BorderRadius.circular(12),
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => page),
-          );
-        },
+        borderRadius: BorderRadius.circular(16),
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => page),
+        ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 36, color: color),
-            const SizedBox(height: 8),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4.0),
-              child: Text(
-                title,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 13,
-                  fontWeight: FontWeight.bold,
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
+            Icon(icon, size: 48, color: color),
+            const SizedBox(height: 12),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFooter() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      color: Colors.grey[850],
+      child: Column(
+        children: [
+          const Text(
+            "Created by rockynow",
+            style: TextStyle(
+              color: Colors.white54,
+              fontStyle: FontStyle.italic,
+            ),
+          ),
+          Text(
+            "Version: $_appVersion",
+            style: const TextStyle(color: Colors.white30, fontSize: 10),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // 暫時用的佔位頁面
+  Widget _buildPlaceholder(String title) {
+    return Scaffold(
+      appBar: AppBar(title: Text(title)),
+      body: Center(
+        child: Text(
+          "$title\nComing Soon...",
+          textAlign: TextAlign.center,
+          style: const TextStyle(fontSize: 24, color: Colors.grey),
         ),
       ),
     );

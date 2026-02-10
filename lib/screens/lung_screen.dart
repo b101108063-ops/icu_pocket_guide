@@ -1,4 +1,3 @@
-// lib/screens/lung_screen.dart
 import 'package:flutter/material.dart';
 
 class LungScreen extends StatefulWidget {
@@ -17,7 +16,7 @@ class _LungScreenState extends State<LungScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this); // 改為 2 個 Tab
+    _tabController = TabController(length: 2, vsync: this);
   }
 
   @override
@@ -28,27 +27,39 @@ class _LungScreenState extends State<LungScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Lung Diseases & Meds"),
-        backgroundColor: Colors.blueAccent[700],
-        bottom: TabBar(
-          controller: _tabController,
-          indicatorColor: Colors.white,
-          tabs: const [
-            Tab(text: "Pneumonia (抗生素)"),
-            Tab(text: "COPD / Asthma"),
-          ],
-        ),
-      ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [_buildPneumoniaTab(), _buildCopdAsthmaTab()],
+    // ★ 修改點：移除 Scaffold/AppBar，使用 Column 包裝內部 TabBar
+    return Container(
+      color: Colors.grey[900],
+      child: Column(
+        children: [
+          // 內部分頁標籤 (次級導航)
+          Container(
+            color: Colors.blueGrey[800],
+            child: TabBar(
+              controller: _tabController,
+              indicatorColor: Colors.tealAccent,
+              labelColor: Colors.tealAccent,
+              unselectedLabelColor: Colors.grey,
+              tabs: const [
+                Tab(text: "Pneumonia"),
+                Tab(text: "COPD / Asthma"),
+              ],
+            ),
+          ),
+          // 內容區
+          Expanded(
+            child: TabBarView(
+              controller: _tabController,
+              children: [_buildPneumoniaTab(), _buildCopdAsthmaTab()],
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  // --- Tab 1: Pneumonia ---
+  // ... (保留下方 _buildPneumoniaTab, _buildCopdAsthmaTab 等內容，完全不用動) ...
+  // (程式碼與之前提供的相同，請貼上即可)
   Widget _buildPneumoniaTab() {
     return ListView(
       padding: const EdgeInsets.all(16),
@@ -126,7 +137,6 @@ class _LungScreenState extends State<LungScreen>
     );
   }
 
-  // --- Tab 2: COPD / Asthma ---
   Widget _buildCopdAsthmaTab() {
     return ListView(
       padding: const EdgeInsets.all(16),
@@ -143,7 +153,6 @@ class _LungScreenState extends State<LungScreen>
     );
   }
 
-  // Helper Widgets
   Widget _buildSectionHeader(String title) => Padding(
     padding: const EdgeInsets.only(left: 4, bottom: 8),
     child: Text(
