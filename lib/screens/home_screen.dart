@@ -1,199 +1,213 @@
 // lib/screens/home_screen.dart
 import 'package:flutter/material.dart';
-
-// 引入各系統的 Menu 頁面
-import 'menus/resp_menu_screen.dart';
 import 'menus/cvs_menu_screen.dart';
-import 'menus/neuro_menu_screen.dart';
-import 'menus/renal_menu_screen.dart'; // <--- 1. 加入這行
+import 'menus/resp_menu_screen.dart';
+import 'menus/renal_menu_screen.dart';
+import 'menus/gi_menu_screen.dart';
+import 'menus/endo_menu_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
-  final String _appVersion = "v2.0.0 (System-Based)";
+  // 設定更新日期 (每次更新內容後記得來改這裡)
+  final String lastUpdated = "2026/02/16";
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('ICU Survival Guide'),
-        centerTitle: true,
-        backgroundColor: Colors.grey[900],
+        title: const Text('ICU Pocket Guide'),
+        backgroundColor: Colors.grey[850],
+        actions: [
+          // 右上角資訊按鈕
+          IconButton(
+            icon: const Icon(Icons.info_outline),
+            onPressed: () => _showAboutDialog(context),
+          ),
+        ],
       ),
-      body: Column(
+      backgroundColor: Colors.black,
+      body: ListView(
+        padding: const EdgeInsets.all(16),
         children: [
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: GridView.count(
-                crossAxisCount: 2, // 改成兩欄，讓按鈕大一點，方便點擊
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
-                childAspectRatio: 1.1,
-                children: [
-                  // 1. Cardiovascular (紅)
-                  _buildSystemCard(
-                    context,
-                    'Cardiovascular\n心血管系統',
-                    Icons.monitor_heart,
-                    Colors.redAccent,
-                    const CvsMenuScreen(),
-                  ),
-                  // 2. Respiratory (藍)
-                  _buildSystemCard(
-                    context,
-                    'Respiratory\n呼吸系統',
-                    Icons.air,
-                    Colors.blueAccent,
-                    const RespMenuScreen(),
-                  ),
-                  // 3. Neurological (紫)
-                  _buildSystemCard(
-                    context,
-                    'Neurological\n神經系統',
-                    Icons.psychology,
-                    Colors.deepPurpleAccent,
-                    const NeuroMenuScreen(),
-                  ),
-                  // 4. GI & Hepatic (橘)
-                  _buildSystemCard(
-                    context,
-                    'GI & Hepatic\n消化與肝膽',
-                    Icons.medication_liquid,
-                    Colors.orangeAccent,
-                    _buildPlaceholder("GI & Hepatic"),
-                  ),
-                  // 5. Renal & GU (黃)
-                  _buildSystemCard(
-                    context,
-                    'Renal & GU\n腎臟與泌尿',
-                    Icons.water_drop,
-                    Colors.yellow[700]!,
-                    _buildPlaceholder("Renal & GU"),
-                  ),
-                  // 6. Endo & Meta (綠)
-                  _buildSystemCard(
-                    context,
-                    'Endocrine\n內分泌與代謝',
-                    Icons.bloodtype,
-                    Colors.green,
-                    _buildPlaceholder("Endocrine & Metabolic"),
-                  ),
-                  // 7. Hematology (深紅)
-                  _buildSystemCard(
-                    context,
-                    'Hematology\n血液系統',
-                    Icons.opacity,
-                    Colors.red[900]!,
-                    _buildPlaceholder("Hematology"),
-                  ),
-                  // 8. Toxicology (灰)
-                  _buildSystemCard(
-                    context,
-                    'Toxicology\n毒物與環境',
-                    Icons.warning_amber,
-                    Colors.grey,
-                    _buildPlaceholder("Toxicology"),
-                  ),
-                  // 9. Infectious (青)
-                  _buildSystemCard(
-                    context,
-                    'Infectious ID\n感染科',
-                    Icons.bug_report,
-                    Colors.teal,
-                    _buildPlaceholder("Infectious Disease"),
-                  ),
-                  // 5. Renal & GU (黃)
-                  _buildSystemCard(
-                    context,
-                    'Renal & GU\n腎臟與泌尿',
-                    Icons.water_drop,
-                    Colors.yellow[700]!,
-                    const RenalMenuScreen(), // <--- 2. 替換原本的 Placeholder
-                  ),
-                ],
-              ),
+          // 1. Cardiovascular (紅)
+          _buildSystemCard(
+            context,
+            'Cardiovascular\n心血管系統',
+            Icons.monitor_heart,
+            Colors.redAccent,
+            const CvsMenuScreen(),
+          ),
+          const SizedBox(height: 16),
+
+          // 2. Respiratory (藍)
+          _buildSystemCard(
+            context,
+            'Respiratory\n呼吸系統',
+            Icons.air,
+            Colors.blueAccent,
+            const RespMenuScreen(),
+          ),
+          const SizedBox(height: 16),
+
+          // 3. Neuro (紫) - Placeholder
+          _buildSystemCard(
+            context,
+            'Neurology\n神經系統',
+            Icons.psychology,
+            Colors.purpleAccent,
+            _buildPlaceholder("Neurology"),
+          ),
+          const SizedBox(height: 16),
+
+          // 4. GI & Hepatic (橘)
+          _buildSystemCard(
+            context,
+            'GI & Hepatic\n消化與肝膽',
+            Icons.medication_liquid,
+            Colors.orangeAccent,
+            const GiMenuScreen(),
+          ),
+          const SizedBox(height: 16),
+
+          // 5. Renal & GU (黃)
+          _buildSystemCard(
+            context,
+            'Renal & GU\n腎臟與泌尿',
+            Icons.water_drop,
+            Colors.yellow[700]!,
+            const RenalMenuScreen(),
+          ),
+          const SizedBox(height: 16),
+
+          // 6. Endo & Meta (綠)
+          _buildSystemCard(
+            context,
+            'Endocrine\n內分泌與代謝',
+            Icons.bloodtype,
+            Colors.green,
+            const EndoMenuScreen(),
+          ),
+          const SizedBox(height: 16),
+
+          // 7. Infectious (粉) - Placeholder
+          _buildSystemCard(
+            context,
+            'Infectious Dis.\n感染科',
+            Icons.bug_report,
+            Colors.pinkAccent,
+            _buildPlaceholder("Infectious Diseases"),
+          ),
+
+          // --- 底部更新日期 ---
+          const SizedBox(height: 40),
+          Center(
+            child: Text(
+              "Last Updated: $lastUpdated",
+              style: TextStyle(color: Colors.grey[600], fontSize: 12),
             ),
           ),
-          _buildFooter(),
+          Center(
+            child: Text(
+              "Designed for Residents",
+              style: TextStyle(color: Colors.grey[800], fontSize: 10),
+            ),
+          ),
+          const SizedBox(height: 20),
         ],
       ),
     );
   }
 
-  Widget _buildSystemCard(
-    BuildContext context,
-    String title,
-    IconData icon,
-    Color color,
-    Widget page,
-  ) {
+  // 建構卡片的方法
+  Widget _buildSystemCard(BuildContext context, String title, IconData icon, Color color, Widget page) {
     return Card(
       color: Colors.grey[900],
       elevation: 4,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: color.withOpacity(0.5), width: 2), // 加個邊框更有質感
+        side: BorderSide(color: color.withOpacity(0.5), width: 1),
       ),
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
-        onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => page),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 48, color: color),
-            const SizedBox(height: 12),
-            Text(
-              title,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => page),
+          );
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.2),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(icon, size: 32, color: color),
               ),
+              const SizedBox(width: 20),
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+              const Spacer(),
+              Icon(Icons.arrow_forward_ios, color: Colors.grey[600], size: 16),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Placeholder 頁面 (給還沒做好的功能用)
+  Widget _buildPlaceholder(String title) {
+    return Scaffold(
+      appBar: AppBar(title: Text(title), backgroundColor: Colors.grey[850]),
+      backgroundColor: Colors.grey[900],
+      body: Center(child: Text("$title\nComing Soon...", textAlign: TextAlign.center, style: const TextStyle(color: Colors.grey, fontSize: 20))),
+    );
+  }
+
+  // 顯示關於與免責聲明
+  void _showAboutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.grey[900],
+        title: const Text("About ICU Pocket Guide", style: TextStyle(color: Colors.white)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text("Version: 1.0.0", style: TextStyle(color: Colors.grey[400])),
+            Text("Last Updated: $lastUpdated", style: TextStyle(color: Colors.grey[400])),
+            const SizedBox(height: 16),
+            const Text(
+              "Disclaimer (免責聲明):",
+              style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              "This app is intended for educational purposes only for medical professionals. \n\n"
+              "While we strive for accuracy based on standard guidelines (Marino's ICU Book, MICU Guide), medical knowledge changes constantly. \n\n"
+              "Always verify drug dosages and protocols with your institution's guidelines and clinical judgment. The developer assumes no liability for errors or outcomes.",
+              style: TextStyle(color: Colors.white70, fontSize: 12),
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildFooter() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 12),
-      color: Colors.grey[850],
-      child: Column(
-        children: [
-          const Text(
-            "Created by rockynow",
-            style: TextStyle(
-              color: Colors.white54,
-              fontStyle: FontStyle.italic,
-            ),
-          ),
-          Text(
-            "Version: $_appVersion",
-            style: const TextStyle(color: Colors.white30, fontSize: 10),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Close"),
           ),
         ],
-      ),
-    );
-  }
-
-  // 暫時用的佔位頁面
-  Widget _buildPlaceholder(String title) {
-    return Scaffold(
-      appBar: AppBar(title: Text(title)),
-      body: Center(
-        child: Text(
-          "$title\nComing Soon...",
-          textAlign: TextAlign.center,
-          style: const TextStyle(fontSize: 24, color: Colors.grey),
-        ),
       ),
     );
   }
