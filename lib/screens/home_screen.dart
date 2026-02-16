@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'menus/resp_menu_screen.dart';
 import 'menus/cvs_menu_screen.dart';
 import 'menus/neuro_menu_screen.dart';
-// 其他系統暫時用 Placeholder
+import 'menus/renal_menu_screen.dart'; // <--- 1. 加入這行
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -102,6 +102,14 @@ class HomeScreen extends StatelessWidget {
                     Icons.bug_report,
                     Colors.teal,
                     _buildPlaceholder("Infectious Disease"),
+                  ),
+                  // 5. Renal & GU (黃)
+                  _buildSystemCard(
+                    context,
+                    'Renal & GU\n腎臟與泌尿',
+                    Icons.water_drop,
+                    Colors.yellow[700]!,
+                    const RenalMenuScreen(), // <--- 2. 替換原本的 Placeholder
                   ),
                 ],
               ),
