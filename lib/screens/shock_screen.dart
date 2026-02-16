@@ -11,35 +11,86 @@ class ShockScreen extends StatelessWidget {
       child: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          _buildHeader("1. 休克分類與血流動力學"),
+          // 1. 核心觀念 (警示卡)
+          _buildWarningCard(),
+          const SizedBox(height: 16),
+
+          // 2. 血流動力學鑑別 (表格)
+          _buildHeader("1. 休克分類與血流動力學 (Hemodynamics)"),
           _buildHemodynamicsTable(),
-          const SizedBox(height: 8),
-          const Text(
-            "註：敗血性休克早期為高 CO、低 SVR；晚期可能轉為低 CO。",
-            style: TextStyle(color: Colors.grey, fontSize: 12),
-          ),
-
           const SizedBox(height: 16),
-          _buildHeader("2. 關鍵監測指標 (The 5 Markers)"),
+
+          // 3. 進階監測 (數值意義)
+          _buildHeader("2. 進階監測指標 (Advanced Monitoring)"),
           _buildMonitoringSection(),
-
           const SizedBox(height: 16),
-          _buildHeader("3. 治療策略 (Management)"),
+
+          // 4. 通用處置 (Step-by-Step)
+          _buildHeader("3. 通用處置 (General Management)"),
           _buildManagementSteps(),
-
           const SizedBox(height: 16),
-          _buildHeader("4. 復甦目標 (Goals)"),
+
+          // 5. 特定治療 (Sepsis, Cardiogenic...)
+          _buildHeader("4. 特定休克治療 (Specific Tx)"),
+          _buildSpecificTxSection(),
+          const SizedBox(height: 16),
+
+          // 6. 復甦目標 (Goals)
+          _buildHeader("5. 復甦目標 (Goals of Resuscitation)"),
           _buildGoalCard(),
 
-          const SizedBox(height: 24),
-          _buildResidentNote(),
           const SizedBox(height: 30),
         ],
       ),
     );
   }
 
-  // --- 1. 血流動力學表格 ---
+  // --- 1. 核心觀念警示卡 ---
+  Widget _buildWarningCard() {
+    return Card(
+      color: Colors.red[900]!.withOpacity(0.4),
+      shape: RoundedRectangleBorder(
+        side: BorderSide(color: Colors.redAccent.withOpacity(0.5)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: const [
+            Row(
+              children: [
+                Icon(Icons.warning_amber, color: Colors.orangeAccent),
+                SizedBox(width: 8),
+                Text(
+                  "核心觀念 (Core Concepts)",
+                  style: TextStyle(
+                    color: Colors.orangeAccent,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 8),
+            Text(
+              "• 休克 = 細胞缺氧 (不僅是低血壓)。",
+              style: TextStyle(color: Colors.white),
+            ),
+            Text(
+              "• 血壓正常也可能休克 (隱形休克)。",
+              style: TextStyle(color: Colors.white70),
+            ),
+            Text(
+              "• 關鍵指標: Lactate > 2 mmol/L, 尿量 < 0.5 mL/kg/hr, 意識改變。",
+              style: TextStyle(color: Colors.white70),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // --- 2. 血流動力學表格 ---
   Widget _buildHemodynamicsTable() {
     return Card(
       color: Colors.grey[850],
@@ -47,12 +98,74 @@ class ShockScreen extends StatelessWidget {
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
-            _buildTableRow("Type", "CVP", "CO", "SVR", isHeader: true),
+            // 表頭
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Row(
+                children: const [
+                  Expanded(
+                    flex: 3,
+                    child: Text(
+                      "Type",
+                      style: TextStyle(
+                        color: Colors.tealAccent,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 2,
+                    child: Text(
+                      "CVP\n(Preload)",
+                      style: TextStyle(color: Colors.tealAccent, fontSize: 12),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 2,
+                    child: Text(
+                      "CO\n(Pump)",
+                      style: TextStyle(color: Colors.tealAccent, fontSize: 12),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 2,
+                    child: Text(
+                      "SVR\n(Afterload)",
+                      style: TextStyle(color: Colors.tealAccent, fontSize: 12),
+                    ),
+                  ),
+                ],
+              ),
+            ),
             const Divider(color: Colors.white24),
-            _buildTableRow("低血容\nHypovolemic", "Low ⬇", "Low ⬇", "High ⬆"),
-            _buildTableRow("心因性\nCardiogenic", "High ⬆", "Low ⬇", "High ⬆"),
-            _buildTableRow("阻塞性\nObstructive", "High ⬆", "Low ⬇", "High ⬆"),
-            _buildTableRow("分佈性\nDistributive", "Low ⬇", "High ⬆", "Low ⬇"),
+            _buildTableRow(
+              "低血容\nHypovolemic",
+              "Low ⬇",
+              "Low ⬇",
+              "High ⬆",
+              "出血, 脫水 (冷)",
+            ),
+            _buildTableRow(
+              "心因性\nCardiogenic",
+              "High ⬆",
+              "Low ⬇",
+              "High ⬆",
+              "AMI, HF (濕冷)",
+            ),
+            _buildTableRow(
+              "阻塞性\nObstructive",
+              "High ⬆",
+              "Low ⬇",
+              "High ⬆",
+              "PE, 氣胸 (頸靜脈怒張)",
+            ),
+            _buildTableRow(
+              "分佈性\nDistributive",
+              "Low/Norm",
+              "High ⬆",
+              "Low ⬇",
+              "Sepsis, 過敏 (暖)",
+            ),
           ],
         ),
       ),
@@ -63,86 +176,89 @@ class ShockScreen extends StatelessWidget {
     String type,
     String cvp,
     String co,
-    String svr, {
-    bool isHeader = false,
-  }) {
-    TextStyle style = TextStyle(
-      color: isHeader ? Colors.tealAccent : Colors.white,
-      fontWeight: isHeader ? FontWeight.bold : FontWeight.normal,
-      fontSize: 14,
-    );
-
+    String svr,
+    String note,
+  ) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            flex: 3,
+          Row(
+            children: [
+              Expanded(
+                flex: 3,
+                child: Text(
+                  type,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              Expanded(flex: 2, child: _buildArrowText(cvp)),
+              Expanded(flex: 2, child: _buildArrowText(co)),
+              Expanded(flex: 2, child: _buildArrowText(svr)),
+            ],
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 4.0),
             child: Text(
-              type,
-              style: style.copyWith(fontWeight: FontWeight.bold),
+              note,
+              style: const TextStyle(
+                color: Colors.grey,
+                fontSize: 12,
+                fontStyle: FontStyle.italic,
+              ),
             ),
           ),
-          Expanded(flex: 2, child: _buildArrowText(cvp, isHeader)),
-          Expanded(flex: 2, child: _buildArrowText(co, isHeader)),
-          Expanded(flex: 2, child: _buildArrowText(svr, isHeader)),
         ],
       ),
     );
   }
 
-  Widget _buildArrowText(String text, bool isHeader) {
-    if (isHeader)
-      return Text(
-        text,
-        style: const TextStyle(
-          color: Colors.tealAccent,
-          fontWeight: FontWeight.bold,
-        ),
-      );
-
+  Widget _buildArrowText(String text) {
     Color color = Colors.white;
     if (text.contains("High") || text.contains("⬆")) color = Colors.redAccent;
     if (text.contains("Low") || text.contains("⬇")) color = Colors.blueAccent;
-
     return Text(
       text,
       style: TextStyle(color: color, fontWeight: FontWeight.bold),
     );
   }
 
-  // --- 2. 監測指標 ---
+  // --- 3. 進階監測指標 ---
   Widget _buildMonitoringSection() {
     return Column(
       children: [
         _buildMonitorCard(
-          "Lactate (乳酸)",
+          "Lactate",
           "> 2 mmol/L",
-          "細胞缺氧指標",
+          "細胞無氧代謝指標 (缺氧)",
           Colors.redAccent,
         ),
         _buildMonitorCard(
-          "ScvO2 (靜脈血氧)",
-          "< 50%",
-          "DO2 (輸送) 不足\n(如：低血容、心因性)",
+          "SVV (Flotrac)",
+          "> 10-12%",
+          "Hypovolemia (欠水) -> 對輸液有反應",
+          Colors.blueAccent,
+        ),
+        _buildMonitorCard(
+          "CI (Cardiac Index)",
+          "< 2.5",
+          "心臟功能不佳 (Cardiogenic)",
           Colors.orangeAccent,
         ),
         _buildMonitorCard(
-          "ScvO2 (靜脈血氧)",
-          "> 80%",
-          "VO2 (攝取) 障礙\n(如：敗血性休克分流)",
-          Colors.tealAccent,
+          "SVRI",
+          "< 1700",
+          "血管擴張 (Vasodilation, Sepsis)",
+          Colors.purpleAccent,
         ),
         _buildMonitorCard(
           "PCO2 Gap",
           "> 6 mmHg",
-          "組織灌流不足 (Low flow)\n微循環障礙指標",
-          Colors.purpleAccent,
-        ),
-        _buildMonitorCard(
-          "Urine Output",
-          "< 0.5 mL/kg/hr",
-          "器官灌流不足早期徵象",
+          "組織灌流不足 (Low flow state)\n即使 BP 正常，微循環仍差",
           Colors.yellowAccent,
         ),
       ],
@@ -160,8 +276,8 @@ class ShockScreen extends StatelessWidget {
       shape: RoundedRectangleBorder(
         side: BorderSide(color: color.withOpacity(0.5)),
       ),
-      margin: const EdgeInsets.only(bottom: 8),
       child: ListTile(
+        dense: true,
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -174,11 +290,7 @@ class ShockScreen extends StatelessWidget {
             ),
             Text(
               value,
-              style: TextStyle(
-                color: color,
-                fontWeight: FontWeight.bold,
-                fontSize: 18,
-              ),
+              style: TextStyle(color: color, fontWeight: FontWeight.bold),
             ),
           ],
         ),
@@ -187,17 +299,17 @@ class ShockScreen extends StatelessWidget {
     );
   }
 
-  // --- 3. 治療策略 ---
+  // --- 4. 通用處置 ---
   Widget _buildManagementSteps() {
     return Column(
       children: [
         _buildStepTile(
-          "Step 1: Fluid (輸液復甦)",
-          "首選晶體液 (Crystalloids)",
+          "Step 1: Fluid (液體復甦)",
+          "首選晶體液 (Lactated Ringer's > N/S)",
           [
             "Sepsis: 前 3hr 給予 30 ml/kg",
-            "種類: Ringer's Lactate 或 Plasma-Lyte",
-            "評估: 看 Fluid Challenge 後的 SV/PPV 變化 (不要只看 CVP)",
+            "評估: PLR test 或 Fluid challenge (500ml)",
+            "目標: 增加 SV 或 BP，避免過負荷",
           ],
           Icons.water_drop,
           Colors.blueAccent,
@@ -206,23 +318,12 @@ class ShockScreen extends StatelessWidget {
           "Step 2: Vasopressors (升壓)",
           "首選 Norepinephrine (Levophed)",
           [
-            "Levophed: Start 0.05-0.1 mcg/kg/min (5-10 mcg/min)。\n   特點: α1 強力收縮 + 微弱 β1。",
-            "Vasopressin: 第二線。當 Levo 高劑量 (>0.25) 時加入。\n   劑量: 固定 0.03-0.04 U/min (不滴定)。",
-            "Epinephrine: 過敏性休克首選。敗血症為後線 (易高乳酸)。",
-            "Phenylephrine: 純 α 作用。僅用於心跳過快時 (會降 CO)。",
+            "Levophed: Start 2-5 mcg/min (0.05-0.1 mcg/kg/min)",
+            "Vasopressin: 第二線。當 Levo > 0.25 mcg/kg/min 時加入。\n   劑量固定 0.03-0.04 U/min。",
+            "Phenylephrine: 純 α 作用。僅用於心跳過快時。",
           ],
           Icons.arrow_upward,
           Colors.redAccent,
-        ),
-        _buildStepTile(
-          "Step 3: Inotropes (強心)",
-          "CO 低 或 ScvO2 低時使用",
-          [
-            "Dobutamine: 敗血症合併心肌抑制時使用。",
-            "Refractory Shock: 考慮 Hydrocortisone 200mg/day (50mg IV Q6H)。",
-          ],
-          Icons.monitor_heart,
-          Colors.orangeAccent,
         ),
       ],
     );
@@ -238,12 +339,15 @@ class ShockScreen extends StatelessWidget {
     return Card(
       color: Colors.grey[850],
       child: ExpansionTile(
-        leading: Icon(icon, color: color, size: 32),
+        leading: Icon(icon, color: color, size: 28),
         title: Text(
           title,
           style: TextStyle(color: color, fontWeight: FontWeight.bold),
         ),
-        subtitle: Text(subtitle, style: const TextStyle(color: Colors.white60)),
+        subtitle: Text(
+          subtitle,
+          style: const TextStyle(color: Colors.white60, fontSize: 12),
+        ),
         children: details
             .map(
               (d) => ListTile(
@@ -257,7 +361,54 @@ class ShockScreen extends StatelessWidget {
     );
   }
 
-  // --- 4. 目標與筆記 ---
+  // --- 5. 特定治療 ---
+  Widget _buildSpecificTxSection() {
+    return Column(
+      children: [
+        _buildExpTile("A. 敗血性休克 (Sepsis Bundle)", [
+          "1. 測 Lactate, BC x 2, 給廣效抗生素 (1hr內)",
+          "2. Fluid 30 ml/kg (若 BP 低或 Lac > 4)",
+          "3. 若 MAP < 65: 用 Levophed",
+          "4. 若 Refractory: Hydrocortisone 200mg/day",
+        ], Colors.orangeAccent),
+        _buildExpTile("B. 心因性休克 (Cardiogenic)", [
+          "關鍵: 避免過度輸液",
+          "Dobutamine: 首選強心 (2-20 mcg/kg/min)。\n   注意: 可能降血壓，需配 Levo",
+          "處置: PCI, IABP, ECMO",
+        ], Colors.redAccent),
+        _buildExpTile("C. 阻塞性休克 (Obstructive)", [
+          "氣胸: 針刺減壓 / 胸管",
+          "Tamponade: 心包膜穿刺",
+          "PE: 溶栓 (Thrombolysis) 或 ECMO",
+        ], Colors.purpleAccent),
+      ],
+    );
+  }
+
+  Widget _buildExpTile(String title, List<String> items, Color color) {
+    return Card(
+      color: Colors.grey[900],
+      shape: RoundedRectangleBorder(
+        side: BorderSide(color: color.withOpacity(0.3)),
+      ),
+      child: ExpansionTile(
+        title: Text(
+          title,
+          style: TextStyle(color: color, fontWeight: FontWeight.bold),
+        ),
+        children: items
+            .map(
+              (i) => ListTile(
+                dense: true,
+                title: Text(i, style: const TextStyle(color: Colors.white70)),
+              ),
+            )
+            .toList(),
+      ),
+    );
+  }
+
+  // --- 6. 復甦目標 ---
   Widget _buildGoalCard() {
     return Card(
       color: Colors.green.withOpacity(0.1),
@@ -267,48 +418,14 @@ class ShockScreen extends StatelessWidget {
       child: const Padding(
         padding: EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _GoalRow("MAP", "≥ 65 mmHg"),
-            _GoalRow("Urine", "> 0.5 mL/kg/hr"),
-            _GoalRow("Lactate", "< 2 mmol/L (清除率)"),
+            _GoalRow("Urine", "≥ 0.5 mL/kg/hr"),
+            _GoalRow("Lactate", "< 2 mmol/L (下降中)"),
             _GoalRow("ScvO2", "> 70%"),
             _GoalRow("PCO2 Gap", "< 6 mmHg"),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildResidentNote() {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.amber.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.amber),
-      ),
-      child: const Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "👨‍⚕️ 住院醫師小提醒 (Marino's Note):",
-            style: TextStyle(color: Colors.amber, fontWeight: FontWeight.bold),
-          ),
-          SizedBox(height: 8),
-          Text(
-            "1. 低血壓是休克的「結果」而非原因。休克是細胞缺氧。",
-            style: TextStyle(color: Colors.white70),
-          ),
-          Text(
-            "2. 不要只盯著血壓計！誤差很大。請看灌流 (Lactate, Urine, 手腳溫度)。",
-            style: TextStyle(color: Colors.white70),
-          ),
-          Text(
-            "3. 敗血性休克早期識別遵從 qSOFA 或 SOFA。",
-            style: TextStyle(color: Colors.white70),
-          ),
-        ],
       ),
     );
   }

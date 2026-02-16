@@ -20,7 +20,7 @@ class CvsMenuScreen extends StatelessWidget {
             unselectedLabelColor: Colors.white60,
             tabs: [
               Tab(text: "ACLS/Meds"),
-              Tab(text: "Shock"), // 休克處置
+              Tab(text: "Shock"), // 這裡
               Tab(text: "HF/Arrhythmia"),
             ],
           ),
@@ -29,7 +29,7 @@ class CvsMenuScreen extends StatelessWidget {
         body: TabBarView(
           children: [
             const ErMedsScreen(),
-            const ShockScreen(), // <--- 2. 這裡替換原本的 _buildPlaceholder
+            const ShockScreen(), // 確認這裡使用了 ShockScreen
             _buildPlaceholder("Heart Failure\n(Coming Soon)"),
           ],
         ),

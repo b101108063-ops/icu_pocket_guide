@@ -1,5 +1,5 @@
 打包 Web 版：
-Bash
+
 flutter build web --base-href "/icu_pocket_guide/" --release
 搬移檔案：
 清空 docs。
@@ -8,7 +8,7 @@ flutter build web --base-href "/icu_pocket_guide/" --release
 
 
 上傳：
-Bash
+
 git add .
 git commit -m "Refactor to System-based structure"
 git push
