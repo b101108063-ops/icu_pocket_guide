@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import '../er_meds_screen.dart';
 import '../shock_screen.dart'; // <--- 1. 加入這行 import
+import '../hf_screen.dart'; // <--- 1. 加入這行 import
 
 class CvsMenuScreen extends StatelessWidget {
   const CvsMenuScreen({super.key});
@@ -20,8 +21,8 @@ class CvsMenuScreen extends StatelessWidget {
             unselectedLabelColor: Colors.white60,
             tabs: [
               Tab(text: "ACLS/Meds"),
-              Tab(text: "Shock"), // 這裡
-              Tab(text: "HF/Arrhythmia"),
+              Tab(text: "Shock"),
+              Tab(text: "Heart Failure"), // 2. 修改標題
             ],
           ),
         ),
@@ -29,20 +30,10 @@ class CvsMenuScreen extends StatelessWidget {
         body: TabBarView(
           children: [
             const ErMedsScreen(),
-            const ShockScreen(), // 確認這裡使用了 ShockScreen
-            _buildPlaceholder("Heart Failure\n(Coming Soon)"),
+            const ShockScreen(),
+            const HfScreen(), // <--- 3. 這裡替換原本的 _buildPlaceholder
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildPlaceholder(String text) {
-    return Center(
-      child: Text(
-        text,
-        textAlign: TextAlign.center,
-        style: const TextStyle(color: Colors.grey, fontSize: 18),
       ),
     );
   }
