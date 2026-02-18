@@ -120,7 +120,13 @@ class HomeScreen extends StatelessWidget {
   }
 
   // 建構卡片的方法
-  Widget _buildSystemCard(BuildContext context, String title, IconData icon, Color color, Widget page) {
+  Widget _buildSystemCard(
+    BuildContext context,
+    String title,
+    IconData icon,
+    Color color,
+    Widget page,
+  ) {
     return Card(
       color: Colors.grey[900],
       elevation: 4,
@@ -171,7 +177,13 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Text(title), backgroundColor: Colors.grey[850]),
       backgroundColor: Colors.grey[900],
-      body: Center(child: Text("$title\nComing Soon...", textAlign: TextAlign.center, style: const TextStyle(color: Colors.grey, fontSize: 20))),
+      body: Center(
+        child: Text(
+          "$title\nComing Soon...",
+          textAlign: TextAlign.center,
+          style: const TextStyle(color: Colors.grey, fontSize: 20),
+        ),
+      ),
     );
   }
 
@@ -181,17 +193,26 @@ class HomeScreen extends StatelessWidget {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: Colors.grey[900],
-        title: const Text("About ICU Pocket Guide", style: TextStyle(color: Colors.white)),
+        title: const Text(
+          "About ICU Pocket Guide",
+          style: TextStyle(color: Colors.white),
+        ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text("Version: 1.0.0", style: TextStyle(color: Colors.grey[400])),
-            Text("Last Updated: $lastUpdated", style: TextStyle(color: Colors.grey[400])),
+            Text(
+              "Last Updated: $lastUpdated",
+              style: TextStyle(color: Colors.grey[400]),
+            ),
             const SizedBox(height: 16),
             const Text(
               "Disclaimer (免責聲明):",
-              style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                color: Colors.redAccent,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             const SizedBox(height: 8),
             const Text(

@@ -6,9 +6,21 @@ class AdrenalScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.grey[900],
-      child: ListView(
+    return Scaffold(
+      // --- 新增這段 AppBar ---
+      appBar: AppBar(
+        title: const Text('Adrenal Insufficiency'), // 標題
+        backgroundColor: Colors.redAccent[700], // 背景色 (配合 CIRCI 危急的主題色)
+        leading: IconButton(
+          // 雖然通常會自動出現，但加上這行可以確保一定有返回鈕
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context), // 這一行就是「回到上一頁」的指令
+        ),
+      ),
+
+      // -----------------------
+      backgroundColor: Colors.grey[900],
+      body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
           // 1. 快速識別 (CIRCI)
@@ -36,7 +48,24 @@ class AdrenalScreen extends StatelessWidget {
     );
   }
 
-  // --- 1. CIRCI 識別 ---
+  // ... (下面的 _buildCirciCard, _buildDiagnosisCard 等等都不用動，照舊即可) ...
+
+  // 為了完整性，我把下面沒有變動的 Helper Function 也列在這邊，您可以直接複製上面的 build 蓋過去就好
+
+  Widget _buildHeader(String title) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 4, bottom: 8),
+      child: Text(
+        title,
+        style: const TextStyle(
+          color: Colors.tealAccent,
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+
   Widget _buildCirciCard() {
     return Card(
       color: Colors.red[900]!.withOpacity(0.4),
@@ -86,7 +115,6 @@ class AdrenalScreen extends StatelessWidget {
     );
   }
 
-  // --- 2. 診斷 ---
   Widget _buildDiagnosisCard() {
     return Card(
       color: Colors.grey[850],
@@ -148,7 +176,6 @@ class AdrenalScreen extends StatelessWidget {
     );
   }
 
-  // --- 3. 治療 ---
   Widget _buildTreatmentSection() {
     return Column(
       children: [
@@ -205,7 +232,6 @@ class AdrenalScreen extends StatelessWidget {
     );
   }
 
-  // --- 4. Pearls & Myxedema ---
   Widget _buildPearlsSection() {
     return Column(
       children: [
@@ -264,21 +290,6 @@ class AdrenalScreen extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-
-  // --- Helpers ---
-  Widget _buildHeader(String title) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 4, bottom: 8),
-      child: Text(
-        title,
-        style: const TextStyle(
-          color: Colors.tealAccent,
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
     );
   }
 }
